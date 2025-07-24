@@ -4,9 +4,7 @@ import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-@ToString
+@Data
 public class UserRegisterRequest {
 	private String name;
 	private String email;

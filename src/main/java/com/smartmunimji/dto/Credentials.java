@@ -1,13 +1,13 @@
 package com.smartmunimji.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @ToString
 public class Credentials {
 	private String email;

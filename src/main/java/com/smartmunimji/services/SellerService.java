@@ -1,27 +1,32 @@
 package com.smartmunimji.services;
 
+import com.smartmunimji.daos.SellerDao;
+import com.smartmunimji.entities.Seller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.smartmunimji.daos.SellerRepository;
-import com.smartmunimji.entities.Seller;
+import java.util.Optional;
 
 @Service
 public class SellerService {
 
-	@Autowired
-	private SellerRepository sellerRepository;
+    @Autowired
+    private SellerDao sellerDao;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	public Seller registerSeller(Seller seller) {
-		seller.setPassword(passwordEncoder.encode(seller.getPassword()));
-		return sellerRepository.save(seller);
-	}
+    public Seller registerSeller(Seller seller) {
+        seller.setPassword(passwordEncoder.encode(seller.getPassword()));
+        return sellerDao.save(seller);
+    }
 
-	public Seller getByEmail(String email) {
-		return sellerRepository.findByEmail(email);
-	}
+    public Optional<Seller> getByEmail(String email) {
+        return sellerDao.findBySellersemail(email);
+    }
+
+    public boolean emailExists(String email) {
+        return sellerDao.findBySellersemail(email).isPresent();
+    }
 }

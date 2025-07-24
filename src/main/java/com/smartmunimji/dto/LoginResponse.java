@@ -1,5 +1,10 @@
 package com.smartmunimji.dto;
 
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginResponse {
 	private String message;
 	private String token;

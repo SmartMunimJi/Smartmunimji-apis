@@ -4,14 +4,17 @@ import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.smartmunimji.entities.Admin;
 import com.smartmunimji.entities.Customer;
 import com.smartmunimji.entities.Seller;
+import com.smartmunimji.services.UnifiedUserDetailsService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
@@ -30,45 +33,33 @@ public class JwtUtil {
 	private String jwtSecret;
 
 	private Key jwtKey;
+	
+	@Autowired
+    private UnifiedUserDetailsService userDetailsService;
 
 	@PostConstruct
 	public void init() {
 		jwtKey = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 	}
 
-//	public String createToken(Authentication authentication) {
-//		Admin admin = (Admin) authentication.getPrincipal();
-//	    String subject = String.valueOf(admin.getId());
-//
-//	    Date now = new Date();
-//	    Date expiryDate = new Date(now.getTime() + jwtExpiration);
-//
-//	    return Jwts.builder()
-//	            .setSubject(subject)
-//	            .setIssuedAt(now)
-//	            .setExpiration(expiryDate)
-//	            .signWith(jwtKey, SignatureAlgorithm.HS256)
-//	            .compact();
-//	}
-
 	public String createToken(Authentication authentication) {
 		Object principal = authentication.getPrincipal();
-		String userId = null;
+		String userEmail;
 
-		if (principal instanceof Customer) {
-			userId = String.valueOf(((Customer) principal).getId());
-		} else if (principal instanceof Admin) {
-			userId = String.valueOf(((Admin) principal).getId());
+		if (principal instanceof Admin) {
+			userEmail = ((Admin) principal).getEmail();
+		} else if (principal instanceof Customer) {
+			userEmail = ((Customer) principal).getEmail();
 		} else if (principal instanceof Seller) {
-			userId = String.valueOf(((Seller) principal).getId());
+			userEmail = ((Seller) principal).getSellersemail();
 		} else {
-			userId = principal.toString();
+			userEmail = principal.toString();
 		}
 
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + jwtExpiration);
 
-		return Jwts.builder().setSubject(userId).setIssuedAt(now).setExpiration(expiryDate)
+		return Jwts.builder().setSubject(userEmail).setIssuedAt(now).setExpiration(expiryDate)
 				.signWith(jwtKey, SignatureAlgorithm.HS256).compact();
 	}
 
@@ -77,13 +68,31 @@ public class JwtUtil {
 
 		Claims claims = parser.parseClaimsJws(token).getBody();
 
+		String email = claims.getSubject();
 //		String adminId = claims.getSubject();
-		String userId = claims.getSubject();
+		UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+//		String userId = claims.getSubject();
 
-		return new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
+		return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 	}
 
-	public String extractUserId(String token) {
-		return Jwts.parserBuilder().setSigningKey(jwtKey).build().parseClaimsJws(token).getBody().getSubject();
-	}
+	public String extractEmail(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(jwtKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+	
+	public boolean isTokenExpired(String token) {
+        Date expiration = Jwts.parserBuilder()
+                .setSigningKey(jwtKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+
+        return expiration.before(new Date());
+    }
 }

@@ -23,22 +23,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+	        throws ServletException, IOException {
 
-		String authHeader = request.getHeader("Authorization");
-
-		boolean hasBearer = authHeader != null && authHeader.startsWith("Bearer");
-		Authentication authentication = null;
-
-		if (hasBearer) {
-			String token = authHeader.substring(7).trim();
-			authentication = jwtUtil.validateToken(token);
+		String path = request.getRequestURI();
+		if (path.startsWith("/api/admin/login") || path.startsWith("/api/admin/register") ||
+		    path.startsWith("/api/customer/login") || path.startsWith("/api/customer/register") ||
+		    path.startsWith("/api/seller/login") || path.startsWith("/api/seller/register")) {
+		    filterChain.doFilter(request, response);
+		    return;
 		}
 
-		if (authentication != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-		}
+	    String authHeader = request.getHeader("Authorization");
+	    boolean hasBearer = authHeader != null && authHeader.startsWith("Bearer");
+	    Authentication authentication = null;
 
-		filterChain.doFilter(request, response);
+	    if (hasBearer) {
+	        String token = authHeader.substring(7).trim();
+	        authentication = jwtUtil.validateToken(token);
+	    }
+
+	    if (authentication != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+	        SecurityContextHolder.getContext().setAuthentication(authentication);
+	    }
+
+	    filterChain.doFilter(request, response);
 	}
 }

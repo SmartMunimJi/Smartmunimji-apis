@@ -12,11 +12,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "admins")
-public class Admin implements UserDetails{
-	
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Admin implements UserDetails {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -24,10 +30,6 @@ public class Admin implements UserDetails{
 	private String email;
 	private String password;
 	private String phone;
-
-	public Admin() {
-
-	}
 
 	public int getId() {
 		return id;
@@ -69,18 +71,9 @@ public class Admin implements UserDetails{
 		this.phone = phone;
 	}
 
-	public Admin(int id, String name, String email, String password, String phone) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.phone = phone;
-	}
-
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> auth=AuthorityUtils.createAuthorityList(this.email);
-		return auth;
+		return AuthorityUtils.createAuthorityList("ROLE_ADMIN");
 	}
 
 	@Override

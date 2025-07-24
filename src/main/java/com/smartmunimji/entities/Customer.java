@@ -7,14 +7,21 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "customers")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Customer implements UserDetails{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +29,7 @@ public class Customer implements UserDetails{
 
 	private String name;
 
+	@Column(unique = true)
 	private String email;
 
 	private String password;
@@ -30,19 +38,6 @@ public class Customer implements UserDetails{
 
 	public int getId() {
 		return id;
-	}
-
-	public Customer() {
-		
-	}
-
-	public Customer(int id, String name, String email, String password, String phone, String address) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.phone = phone;
-		this.address = address;
 	}
 
 	public void setId(int id) {
@@ -91,12 +86,32 @@ public class Customer implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> auth=AuthorityUtils.createAuthorityList(this.email);
-		return auth;
+		return AuthorityUtils.createAuthorityList("ROLE_CUSTOMER");
 	}
 
 	@Override
 	public String getUsername() {
 		return this.email;
 	}
+	
+	@Override
+	public boolean isAccountNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+	    return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+	    return true;
+	}
+
 }

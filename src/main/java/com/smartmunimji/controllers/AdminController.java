@@ -14,7 +14,7 @@ import com.smartmunimji.services.AdminService;
 import com.smartmunimji.util.JwtUtil;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/admin")
 public class AdminController {
 
 	@Autowired

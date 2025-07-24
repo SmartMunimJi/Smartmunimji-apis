@@ -14,7 +14,7 @@ import com.smartmunimji.services.SellerService;
 import com.smartmunimji.util.JwtUtil;
 
 @RestController
-@RequestMapping("/api/seller")
+@RequestMapping("/seller")
 public class SellerController {
 
 	@Autowired
@@ -28,15 +28,10 @@ public class SellerController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Credentials credentials) {
-
-		System.out.println("abc"+credentials.getEmail()+" "+credentials.getPassword());
-		Authentication auth = new UsernamePasswordAuthenticationToken(credentials.getEmail(),credentials.getPassword());
-
-
-		auth = authManager.authenticate(auth);
+		Authentication auth = authManager.authenticate(
+				new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword()));
 
 		String token = jwtUtil.createToken(auth);
-
 		return ResponseEntity.ok(new LoginResponse("Login successful", token));
 	}
 

@@ -9,30 +9,49 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-public class Seller implements UserDetails{
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "sellers")
+public class Seller implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	@Column(name = "sellername")
 	private String sellername;
+
+	@Column(name = "sellercontact")
 	private String sellercontact;
+
+	@Column(name = "shopname")
 	private String shopname;
 
-	@Column(unique = true)
+	@Column(name = "sellersemail", unique = true)
 	private String sellersemail;
 
+	
 	private String shopaddress;
+
 	private String city;
 	private String pincode;
 	private String category;
+
+	@Column(name = "contract_status")
 	private String contractStatus;
+
 	private String password;
 
 	public int getId() {
@@ -41,46 +60,6 @@ public class Seller implements UserDetails{
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public String getSellername() {
-		return sellername;
-	}
-
-	public void setSellername(String sellername) {
-		this.sellername = sellername;
-	}
-
-	public String getSellercontact() {
-		return sellercontact;
-	}
-
-	public void setSellercontact(String sellercontact) {
-		this.sellercontact = sellercontact;
-	}
-
-	public String getShopname() {
-		return shopname;
-	}
-
-	public void setShopname(String shopname) {
-		this.shopname = shopname;
-	}
-
-	public String getSellersemail() {
-		return sellersemail;
-	}
-
-	public void setSellersemail(String sellersemail) {
-		this.sellersemail = sellersemail;
-	}
-
-	public String getShopaddress() {
-		return shopaddress;
-	}
-
-	public void setShopaddress(String shopaddress) {
-		this.shopaddress = shopaddress;
 	}
 
 	public String getCity() {
@@ -125,12 +104,73 @@ public class Seller implements UserDetails{
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		List<GrantedAuthority> auth=AuthorityUtils.createAuthorityList(this.sellersemail);
-		return auth;
+		return AuthorityUtils.createAuthorityList("ROLE_SELLER");
+	}
+
+	public String getSellername() {
+		return sellername;
+	}
+
+	public void setSellername(String sellername) {
+		this.sellername = sellername;
+	}
+
+	public String getSellercontact() {
+		return sellercontact;
+	}
+
+	public void setSellercontact(String sellercontact) {
+		this.sellercontact = sellercontact;
+	}
+
+	public String getShopname() {
+		return shopname;
+	}
+
+	public void setShopname(String shopname) {
+		this.shopname = shopname;
+	}
+
+	public String getShopaddress() {
+		return shopaddress;
+	}
+
+	public void setShopaddress(String shopaddress) {
+		this.shopaddress = shopaddress;
+	}
+
+
+	public String getSellersemail() {
+		return sellersemail;
+	}
+
+	public void setSellersemail(String sellersemail) {
+		this.sellersemail = sellersemail;
 	}
 
 	@Override
 	public String getUsername() {
 		return this.sellersemail;
 	}
+	
+	@Override
+	public boolean isAccountNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+	    return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+	    return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+	    return true;
+	}
+
 }
