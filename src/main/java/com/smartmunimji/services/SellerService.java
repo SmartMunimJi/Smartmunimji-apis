@@ -11,22 +11,22 @@ import java.util.Optional;
 @Service
 public class SellerService {
 
-    @Autowired
-    private SellerDao sellerDao;
+	@Autowired
+	private SellerDao sellerDao;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    public Seller registerSeller(Seller seller) {
-        seller.setPassword(passwordEncoder.encode(seller.getPassword()));
-        return sellerDao.save(seller);
-    }
+	public Seller registerSeller(Seller seller) {
+		seller.setPassword(passwordEncoder.encode(seller.getPassword()));
+		return sellerDao.save(seller);
+	}
 
-    public Optional<Seller> getByEmail(String email) {
-        return sellerDao.findBySellersemail(email);
-    }
+	public Optional<Seller> getByEmail(String email) {
+		return sellerDao.findBySellersemail(email);
+	}
 
-    public boolean emailExists(String email) {
-        return sellerDao.findBySellersemail(email).isPresent();
-    }
+	public boolean emailExists(String email) {
+		return sellerDao.findBySellersemail(email).isPresent();
+	}
 }

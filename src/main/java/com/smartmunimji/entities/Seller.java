@@ -1,7 +1,6 @@
 package com.smartmunimji.entities;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -9,12 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,7 +38,6 @@ public class Seller implements UserDetails {
 	@Column(name = "sellersemail", unique = true)
 	private String sellersemail;
 
-	
 	private String shopaddress;
 
 	private String city;
@@ -139,7 +134,6 @@ public class Seller implements UserDetails {
 		this.shopaddress = shopaddress;
 	}
 
-
 	public String getSellersemail() {
 		return sellersemail;
 	}
@@ -152,25 +146,25 @@ public class Seller implements UserDetails {
 	public String getUsername() {
 		return this.sellersemail;
 	}
-	
+
 	@Override
 	public boolean isAccountNonExpired() {
-	    return true;
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-	    return true;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-	    return true;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-	    return true;
+		return true;
 	}
 
 }

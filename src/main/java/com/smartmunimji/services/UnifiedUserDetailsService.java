@@ -60,38 +60,38 @@ import java.util.Optional;
 @Service
 public class UnifiedUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private AdminDao adminDao;
+	@Autowired
+	private AdminDao adminDao;
 
-    @Autowired
-    private CustomerDao customerDao;
+	@Autowired
+	private CustomerDao customerDao;
 
-    @Autowired
-    private SellerDao sellerDao;
+	@Autowired
+	private SellerDao sellerDao;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Admin> adminOpt = adminDao.findByEmail(email);
-        if (adminOpt.isPresent()) {
-            Admin admin = adminOpt.get();
-            return new User(admin.getEmail(), admin.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        }
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Optional<Admin> adminOpt = adminDao.findByEmail(email);
+		if (adminOpt.isPresent()) {
+			Admin admin = adminOpt.get();
+			return new User(admin.getEmail(), admin.getPassword(),
+					Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+		}
 
-        Optional<Customer> customerOpt = customerDao.findByEmail(email);
-        if (customerOpt.isPresent()) {
-            Customer customer = customerOpt.get();
-            return new User(customer.getEmail(), customer.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
-        }
+		Optional<Customer> customerOpt = customerDao.findByEmail(email);
+		if (customerOpt.isPresent()) {
+			Customer customer = customerOpt.get();
+			return new User(customer.getEmail(), customer.getPassword(),
+					Collections.singletonList(new SimpleGrantedAuthority("ROLE_CUSTOMER")));
+		}
 
-        Optional<Seller> sellerOpt = sellerDao.findBySellersemail(email);
-        if (sellerOpt.isPresent()) {
-            Seller seller = sellerOpt.get();
-            return new User(seller.getSellersemail(), seller.getPassword(),
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_SELLER")));
-        }
+		Optional<Seller> sellerOpt = sellerDao.findBySellersemail(email);
+		if (sellerOpt.isPresent()) {
+			Seller seller = sellerOpt.get();
+			return new User(seller.getSellersemail(), seller.getPassword(),
+					Collections.singletonList(new SimpleGrantedAuthority("ROLE_SELLER")));
+		}
 
-        throw new UsernameNotFoundException("User not found with email: " + email);
-    }
+		throw new UsernameNotFoundException("User not found with email: " + email);
+	}
 }

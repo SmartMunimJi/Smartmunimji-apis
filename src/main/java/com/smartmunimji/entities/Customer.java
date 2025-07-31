@@ -1,7 +1,6 @@
 package com.smartmunimji.entities;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -22,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer implements UserDetails{
+public class Customer implements UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -93,25 +92,25 @@ public class Customer implements UserDetails{
 	public String getUsername() {
 		return this.email;
 	}
-	
+
 	@Override
 	public boolean isAccountNonExpired() {
-	    return true;
+		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-	    return true;
+		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-	    return true;
+		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-	    return true;
+		return true;
 	}
 
 }

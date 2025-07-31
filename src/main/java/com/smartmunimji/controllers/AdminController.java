@@ -1,20 +1,20 @@
 package com.smartmunimji.controllers;
 
+import com.smartmunimji.dtos.Credentials;
+import com.smartmunimji.entities.Admin;
+import com.smartmunimji.security.JwtUtil;
+import com.smartmunimji.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.http.*;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import com.smartmunimji.dto.Credentials;
-import com.smartmunimji.dto.LoginResponse;
-import com.smartmunimji.entities.Admin;
-import com.smartmunimji.services.AdminService;
-import com.smartmunimji.util.JwtUtil;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/sm/admin/auth")
+@CrossOrigin(origins = "*")
 public class AdminController {
 
 	@Autowired
@@ -26,23 +26,21 @@ public class AdminController {
 	@Autowired
 	private JwtUtil jwtUtil;
 
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody Credentials credentials) {
-
-		System.out.println("abc"+credentials.getEmail()+" "+credentials.getPassword());
-		Authentication auth = new UsernamePasswordAuthenticationToken(credentials.getEmail(),credentials.getPassword());
-
-
-		auth = authManager.authenticate(auth);
-
-		String token = jwtUtil.createToken(auth);
-
-		return ResponseEntity.ok(new LoginResponse("Login successful", token));
-	}
-
 	@PostMapping("/register")
 	public ResponseEntity<?> register(@RequestBody Admin admin) {
 		Admin saved = adminService.registerAdmin(admin);
 		return ResponseEntity.ok("Admin registered with ID: " + saved.getId());
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody Credentials credentials) {
+		try {
+			Authentication auth = authManager.authenticate(
+					new UsernamePasswordAuthenticationToken(credentials.getEmail(), credentials.getPassword()));
+			String token = jwtUtil.createToken(auth);
+			return ResponseEntity.ok(Map.of("message", "Login successful", "token", token));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+		}
 	}
 }

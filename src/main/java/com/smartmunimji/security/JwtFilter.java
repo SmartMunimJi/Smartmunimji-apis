@@ -1,19 +1,20 @@
 package com.smartmunimji.security;
 
-import java.io.IOException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.smartmunimji.util.JwtUtil;
-
+import com.smartmunimji.services.AdminDetailsService;
+import com.smartmunimji.services.CustomerDetailsService;
+import com.smartmunimji.services.SellerDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -21,31 +22,51 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtUtil jwtUtil;
 
+	@Autowired
+	private CustomerDetailsService customerDetailsService;
+
+	@Autowired
+	private AdminDetailsService adminDetailsService;
+
+	@Autowired
+	private SellerDetailsService sellerDetailsService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-	        throws ServletException, IOException {
+			throws ServletException, IOException {
 
-		String path = request.getRequestURI();
-		if (path.startsWith("/api/admin/login") || path.startsWith("/api/admin/register") ||
-		    path.startsWith("/api/customer/login") || path.startsWith("/api/customer/register") ||
-		    path.startsWith("/api/seller/login") || path.startsWith("/api/seller/register")) {
-		    filterChain.doFilter(request, response);
-		    return;
+		final String authHeader = request.getHeader("Authorization");
+
+		String token = null;
+		String username = null;
+
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			token = authHeader.substring(7);
+			try {
+				username = jwtUtil.extractUsername(token);
+			} catch (Exception e) {
+				response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token");
+				return;
+			}
 		}
 
-	    String authHeader = request.getHeader("Authorization");
-	    boolean hasBearer = authHeader != null && authHeader.startsWith("Bearer");
-	    Authentication authentication = null;
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			String role = jwtUtil.extractRole(token);
 
-	    if (hasBearer) {
-	        String token = authHeader.substring(7).trim();
-	        authentication = jwtUtil.validateToken(token);
-	    }
+			UserDetails userDetails = switch (role) {
+			case "ROLE_CUSTOMER" -> customerDetailsService.loadUserByUsername(username);
+			case "ROLE_SELLER" -> sellerDetailsService.loadUserByUsername(username);
+			case "ROLE_ADMIN" -> adminDetailsService.loadUserByUsername(username);
+			default -> null;
+			};
 
-	    if (authentication != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-	        SecurityContextHolder.getContext().setAuthentication(authentication);
-	    }
+			if (userDetails != null && jwtUtil.validateToken(token, userDetails)) {
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+						null, userDetails.getAuthorities());
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+			}
+		}
 
-	    filterChain.doFilter(request, response);
+		filterChain.doFilter(request, response);
 	}
 }

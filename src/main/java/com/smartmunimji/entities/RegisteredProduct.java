@@ -1,73 +1,80 @@
 package com.smartmunimji.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "registered_products")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class RegisteredProduct {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@ManyToOne
+	@JoinColumn(name = "customer_id", nullable = false)
+	private Customer customer;
 
-    private Integer customerId;
-    private Integer sellerId;
-    private Integer productId;
+	@ManyToOne
+	@JoinColumn(name = "seller_id", nullable = false)
+	private Seller seller;
 
-    private String orderId;
-    private LocalDate purchaseDate;
-    private LocalDate warrantyExpiryDate;
+	@ManyToOne
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 
-    @Column(nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private java.sql.Timestamp registrationDate;
+	@Column(name = "order_id")
+	private String orderId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('active','expired','claimed') DEFAULT 'active'")
-    private Status status = Status.active;
+	@Column(name = "purchase_date")
+	private LocalDate purchaseDate;
 
-    @Lob
-    private byte[] productImage;
+	@Column(name = "warranty_expiry_date")
+	private LocalDate warrantyExpiryDate;
 
-    public enum Status {
-        active, expired, claimed
-    }
+	@Column(name = "registration_date", nullable = false)
+	private LocalDateTime registrationDate = LocalDateTime.now();
 
-	public Integer getId() {
+	@Enumerated(EnumType.STRING)
+	private RegistrationStatus status = RegistrationStatus.active;
+
+	@Lob
+	private byte[] productImage;
+
+	public enum RegistrationStatus {
+		active, expired, claimed
+	}
+
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public Integer getCustomerId() {
-		return customerId;
+	public Customer getCustomer() {
+		return customer;
 	}
 
-	public void setCustomerId(Integer customerId) {
-		this.customerId = customerId;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
-	public Integer getSellerId() {
-		return sellerId;
+	public Seller getSeller() {
+		return seller;
 	}
 
-	public void setSellerId(Integer sellerId) {
-		this.sellerId = sellerId;
+	public void setSeller(Seller seller) {
+		this.seller = seller;
 	}
 
-	public Integer getProductId() {
-		return productId;
+	public Product getProduct() {
+		return product;
 	}
 
-	public void setProductId(Integer productId) {
-		this.productId = productId;
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
 	public String getOrderId() {
@@ -94,19 +101,19 @@ public class RegisteredProduct {
 		this.warrantyExpiryDate = warrantyExpiryDate;
 	}
 
-	public java.sql.Timestamp getRegistrationDate() {
+	public LocalDateTime getRegistrationDate() {
 		return registrationDate;
 	}
 
-	public void setRegistrationDate(java.sql.Timestamp registrationDate) {
+	public void setRegistrationDate(LocalDateTime registrationDate) {
 		this.registrationDate = registrationDate;
 	}
 
-	public Status getStatus() {
+	public RegistrationStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(RegistrationStatus status) {
 		this.status = status;
 	}
 
@@ -118,4 +125,3 @@ public class RegisteredProduct {
 		this.productImage = productImage;
 	}
 }
-

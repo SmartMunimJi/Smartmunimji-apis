@@ -12,18 +12,18 @@ import java.util.Optional;
 @Service
 public class AdminService {
 
-    @Autowired
-    private AdminDao adminDao;
+	@Autowired
+	private AdminDao adminDao;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    public Admin registerAdmin(Admin admin) {
-        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
-        return adminDao.save(admin);
-    }
+	public Admin registerAdmin(Admin admin) {
+		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+		return adminDao.save(admin);
+	}
 
-    public Optional<Admin> getByEmail(String email) {
-        return adminDao.findByEmail(email);
-    }
+	public Optional<Admin> getByEmail(String email) {
+		return adminDao.findByEmail(email);
+	}
 }
