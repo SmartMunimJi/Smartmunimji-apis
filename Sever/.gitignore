@@ -1,0 +1,47 @@
+# Dependency directory
+node_modules/
+
+# pnpm store (in case you use global store in project folder)
+.pnpm-store/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment files
+.env
+.env.*.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build output
+dist/
+build/
+
+# IDE/editor configs
+.vscode/
+.idea/
+
+# Coverage reports
+coverage/
+
+# Optional npm cache directory
+.npm/
+
+# Debugging artifacts
+*.tgz
+
+# PM2 process files
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Local override files
+*.local
